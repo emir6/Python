@@ -1,0 +1,301 @@
+from datetime import datetime
+
+print "\n ****Welcome to Sehir Online Market**** \n \n Please log in by providing your user credentials:"
+
+class InventoryProduct:
+    def __init__(self,name,stock_amount,price):
+        self.name = name
+        self.price = price
+        self.stock_amount = stock_amount
+
+
+class BasketProduct(InventoryProduct):
+    def __init__(self,basket_amount):
+        self.basket_amount = basket_amount
+
+class Basket:
+    ahmet_add_item = {}
+    meryem_add_item = {}
+    ahmet_total_value = 0
+    meryem_total_value = 0
+#    def contents(self):
+#        self.contents =
+    def display_contents(self,user):
+        print "Your basket contains:"
+        self.total_value = 0
+        item_number = 1
+        if bool(Basket.ahmet_add_item)==False:
+            print "Your basket is empty \nTotal= 0$"
+        else:
+            if user == "meryem":
+                for i in self.meryem_add_item:
+                    print item_number, i, "price=" + str(Market().inventory[i].price) + "$", "amount=" + str(
+                        self.meryem_add_item[i]) + "$", "total=" + str(Market().inventory[i].price *self.meryem_add_item[i]) + "$"
+                    item_number += 1
+                print "Total", str(Basket.meryem_total_value) + "$"
+            if user == "ahmet":
+                for i in Basket.ahmet_add_item:
+                    print item_number, i, "price=" + str(Market().inventory[i].price) + "$", "amount=" + str(
+                        Basket.ahmet_add_item[i]) + "$", "total=" + str(Market().inventory[i].price *Basket.ahmet_add_item[i]) + "$"
+                    item_number += 1
+                print "Total", str(Basket.ahmet_total_value) + "$"
+        self.show_basket_submenu(user)
+
+    def show_basket_submenu(self,user):
+        basket_sub = {1: "Update amount", 2: "Remove a item", 3: "Check out", 4: "Go back to main menu"}
+        for k, v in basket_sub.items():
+            print " " * 5, k, v
+        choice = raw_input("Your Choice: ")
+        if int(choice) == 1:
+            if bool(Basket.ahmet_add_item) == True:
+                self.update_item(user)
+            else:
+                print "Your basket is empty \nTotal= 0$"
+                self.display_contents(user)
+        if int(choice) == 2:
+           self.remove_item(user)
+        if int(choice) == 3:
+            Market().print_receipt(user)
+        if int(choice) == 4:
+            Market().show_market_menu(user)
+
+    def add_item(self,item_select,search_term,user):
+        selectedNumber = 0
+        for items2 in Market().inventory.keys():
+            if search_term in items2:
+                selectedNumber += 1
+                if item_select == selectedNumber:
+                    print "Adding " + items2
+                    amount = input("Enter amount: ")
+                    if amount <= Market().inventory[items2].stock_amount:
+                        if user == "ahmet":
+                            Basket.ahmet_add_item[items2] = BasketProduct(amount).basket_amount
+                            Basket.ahmet_total_value += (Market().inventory[items2].price * Basket.ahmet_add_item[items2])
+                            print "Adding " + items2 + " into your basket.\nGoing back to main menu..."
+                            Market().show_market_menu(user)
+                        elif user == "meryem":
+                            Basket.meryem_add_item[items2] = BasketProduct(amount).basket_amount
+                            Basket.meryem_total_value += (Market().inventory[items2].price * Basket.meryem_add_item[items2])
+                            print "Adding " + items2 + " into your basket.\nGoing back to main menu..."
+                            Market().show_market_menu(user)
+                    else:
+                        while amount > Market().inventory[items2].stock_amount:
+                            print "Sorry! The amount exceeds the limit, Please try again with smaller amount"
+                            amount = input("Amount (Enter 0 for main menu): ")
+                            if amount <= Market().inventory[items2].stock_amount and amount != 0:
+                                if user == "ahmet":
+                                    Basket.ahmet_add_item[items2] = BasketProduct(amount).basket_amount
+                                    Basket.ahmet_total_value += (
+                                            Market().inventory[items2].price * Basket.ahmet_add_item[items2])
+                                    print "Adding " + items2 + " into your basket.\nGoing back to main menu..."
+                                    return Market().show_market_menu(user)
+                                elif user == "meryem":
+                                    Basket.meryem_add_item[items2] = BasketProduct(amount).basket_amount
+                                    Basket.meryem_total_value += (
+                                            Market().inventory[items2].price * Basket.meryem_add_item[items2])
+                                    print "Adding " + items2 + " into your basket.\nGoing back to main menu..."
+                                    return Market().show_market_menu(user)
+                            elif amount == 0:
+                                self.show_market_menu(user)
+
+
+    def remove_item(self,user):
+        delete_item = input("Please select a item number for removing: ")
+        number = 0
+        if user == "ahmet":
+            while number<len(Basket.ahmet_add_item.keys()):
+                number += 1
+                if number == delete_item:
+                    a = list(Basket.ahmet_add_item)
+                    a.insert(0,0) #bos alan
+                    b = a.pop(number)
+                    Basket.ahmet_total_value -= (Market().inventory[b].price * Basket.ahmet_add_item[b])
+                    del Basket.ahmet_add_item[b]
+                    print b,"is removed"
+                    return Market().show_market_menu(user)
+        elif user == "meryem":
+            while number<len(Basket.meryem_add_item.keys()):
+                    number += 1
+                    if i == delete_item:
+                        a = list(Basket.meryem_add_item)
+                        a.insert(0, 0)  # bos alan
+                        b = a.pop(number)
+                        Basket.meryem_add_item -= (Market().inventory[items2].price * Basket.meryem_add_item[items2])
+                        del Basket.meryem_add_item[b]
+                        print b, "is removed"
+                        return Market().show_market_menu(user)
+
+
+    def update_item(self,user):
+        changed_item = input("Please select which item to change its amount: ")
+        new_amount = input("Please type the new amount: ")
+        number = 0
+        for item_inventory in Market().inventory.keys():
+            if user == "meryem":
+                for items2 in Basket.meryem_add_item.keys():
+                    if new_amount <= Market().inventory[item_inventory].stock_amount and item_inventory == items2:
+                        number += 1
+                        if number == changed_item:
+                            Basket.meryem_total_value -= (
+                                    Market().inventory[items2].price * Basket.meryem_add_item[items2])
+                            Basket.meryem_add_item[items2] = new_amount
+                            Basket.meryem_total_value += (
+                                    Market().inventory[items2].price * Basket.meryem_add_item[items2])
+                            #Market().inventory[item_inventory].stock_amount -= Basket.meryem_add_item[items2]
+                            self.display_contents(user)
+            if user == "ahmet":
+                for items2 in Basket.ahmet_add_item.keys():
+                    if new_amount <= Market().inventory[item_inventory].stock_amount and item_inventory == items2 :
+                        number += 1
+                        if number == changed_item:
+                            Basket.ahmet_total_value -= (
+                                    Market().inventory[items2].price * Basket.ahmet_add_item[items2])
+                            Basket.ahmet_add_item[items2] = new_amount
+                            Basket.ahmet_total_value += (
+                                    Market().inventory[items2].price * Basket.ahmet_add_item[items2])
+                            #Market().inventory[item_inventory].stock_amount -= Basket.ahmet_add_item[items2]
+                            self.display_contents(user)
+                    else:
+                        while new_amount > Market().inventory[item_inventory].stock_amount and item_inventory == items2:
+                                print "Sorry! The amount exceeds the limit, Please try again with smaller amount"
+                                new_amount = input("Amount (Enter 0 for main menu): ")
+                                if new_amount <= Market().inventory[items2].stock_amount and new_amount != 0:
+                                    if user == "ahmet":
+                                        Basket.ahmet_total_value -= (
+                                                Market().inventory[items2].price * Basket.ahmet_add_item[items2])
+                                        Basket.ahmet_add_item[items2] = BasketProduct(new_amount).basket_amount
+                                        Basket.ahmet_total_value += (
+                                                Market().inventory[items2].price * Basket.ahmet_add_item[items2])
+                                        # self.ahmet_add_item[items2] = [items2,amount,Market().inventory[items2].price]
+                                        print "Adding " + items2 + " into your basket.\nGoing back to main menu..."
+                                        print Market().inventory[items2].stock_amount
+                                        return Market().show_market_menu(user)
+                                    elif user == "meryem":
+                                        Basket.meryem_total_value -= (
+                                                Market().inventory[items2].price * Basket.meryem_add_item[items2])
+                                        Basket.meryem_add_item[items2] = BasketProduct(new_amount).basket_amount
+                                        Basket.meryem_total_value += (
+                                                Market().inventory[items2].price * Basket.meryem_add_item[items2])
+                                        print "Adding " + items2 + " into your basket.\nGoing back to main menu..."
+                                        return Market.show_market_menu(user)
+                                if new_amount == 0:
+                                    Market().show_market_menu(user)
+
+
+class User:
+    def __init__(self,username,password):
+        self.username = username
+        self.password = password
+
+class Market:
+    def __init__(self):
+        self.inventory={"asparagus":InventoryProduct("asparagus",10,5),"broccoli":InventoryProduct("broccoli",15,6),"carrots":InventoryProduct("carrots",18,7),
+                        "apples":InventoryProduct("apples",20,5),"banana":InventoryProduct("banana",10,8),"berries":InventoryProduct("berries",30,3),"eggs":InventoryProduct("eggs",50,2),
+                        "mixed fruit juice":InventoryProduct("mixed fruit juice",0,8),"fish sticks":InventoryProduct("fish sticks",25,12),"ice cream":InventoryProduct("ice cream",32,6),
+                        "apple juice":InventoryProduct("apple juice",40,7),"orange juice":InventoryProduct("orange juice",30,8), "grape juice":InventoryProduct("grape juice",10,9)}
+        meryem = User("meryem","1234")
+        ahmet = User("ahmet","sehir123")
+        self.user = {ahmet.username:ahmet.password,meryem.username:meryem.password}
+        self.ahmet_add_item = {}
+        self.meryem_add_item = {}
+
+    def show_market_menu(self,user):
+        menu_dict = {1: "Search for product", 2: "See Basket", 3: "Check Out", 4: "Logout", 5: "Exit"}
+        for k, v in menu_dict.items():
+            print " " * 5, k, v
+        choice = raw_input("Your Choice: ")
+        if int(choice) == 1:
+            self.search(user)
+        if int(choice) == 2:
+            Basket().display_contents(user)
+        if int(choice) == 3:
+            self.print_receipt(user)
+        if int(choice) == 4:
+            self.login()
+        if int(choice) == 5:
+            print "Bye!"
+
+
+    def search(self,user,):
+        search_term = raw_input("What are you searching for? ")
+        number = 1
+        for items in self.inventory.keys():
+            if search_term in items and search_term != "":
+                print " " * 5, number, items, str(self.inventory[items].price) + "$"
+                number += 1
+        if number == 1 or search_term == " ":
+            while search_term not in self.inventory.keys():
+                not_match = raw_input("Your search did not match any items. Please try something else (Enter 0 for main menu): ")
+                if not_match == "0":
+                    return self.show_market_menu(user)
+                for items in self.inventory.keys():
+                    if not_match in items and not_match != "":
+                        print " " * 5, number, items, str(self.inventory[items].price) + "$"
+                        number += 1
+                if number > 1:
+                    return self.found_search_product(number, not_match,user)
+        return self.found_search_product(number, search_term,user)
+
+    def found_search_product(self,number, search_term,user):
+        print "Found", number - 1, "similar item or items."
+        item_select = input("Please select which item you want to add to your basket (Enter 0 for main menu): ")
+        if item_select == 0:
+            self.show_market_menu(user)
+        else:
+            Basket().add_item(item_select,search_term,user)
+
+    #def update_stock_amount(self,product_name,sold_amount):
+
+    ##def check_out(self,user):
+        ##if user
+
+    def print_receipt(self,user):
+        print "Processing your receipt...\n"
+        print "*" * 5, "Sehir Online market", "*" * 5
+        print "*" * len(str("*" * 5) + " Sehir Online market " + str("*" * 5))
+        print " " * 6, "44 44 0 34"
+        print " " * 6, "sehir.edu.tr"
+        print "-" * len(str("*" * 5) + " Sehir Online market " + str("*" * 5))
+        if user == "ahmet":
+            for i in Basket.ahmet_add_item.keys():
+                print i, "price=" + str(self.inventory[i].price) + "$", "amount=" + str(
+                    Basket.ahmet_add_item[i]) + "$", "total=" + str(
+                    self.inventory[i].price * Basket.ahmet_add_item[i]) + "$"
+                self.inventory[i].stock_amount -= Basket.ahmet_add_item[i]
+            print "-" * len(str("*" * 5) + " Sehir Online market " + str("*" * 5))
+            print "Total", str(Basket.ahmet_total_value) + "$"
+            print "-" * len(str("*" * 5) + " Sehir Online market " + str("*" * 5))
+            nowTime = datetime.now()
+            print nowTime
+            print "Thank you for using our market!\n"
+            self.show_market_menu(user)
+        elif user == "meryem":
+            for i in Basket.meryem_add_item.keys():
+                print i, "price=" + str(self.inventory[i].price) + "$", "amount=" + str(
+                    Basket.meryem_add_item[i]) + "$", "total=" + str(
+                    self.inventory[i].price * Basket.meryem_add_item[i]) + "$"
+                self.inventory[i].stock_amount -= Basket.meryem_add_item[i]
+            print "-" * len(str("*" * 5) + " Sehir Online market " + str("*" * 5))
+            print "Total", str(Basket.meryem_total_value) + "$"
+            print "-" * len(str("*" * 5) + " Sehir Online market " + str("*" * 5))
+            nowTime = datetime.now()
+            print nowTime
+            print "Thank you for using our market!\n"
+            self.show_market_menu(user)
+
+
+    def login(self):
+        user_name = raw_input("User Name: ")
+        password = raw_input("Password: ")
+        if (user_name in self.user.keys()) and (password in self.user.values()):
+            print "Successfully logged in!"
+            print "Welcome, " + user_name + "! Please choose one of the following options by entering the corresponding menu number."
+            self.show_market_menu(user_name)
+        else:
+            while (user_name not in self.user.keys()) or (password not in self.user.values()):
+                print "Your user name and/or password is not correct. Please try again!"
+                self.login()
+                break
+
+market = Market()
+market.login()
