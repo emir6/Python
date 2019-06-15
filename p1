@@ -1,0 +1,105 @@
+import random
+
+print "----- First Hero -----"
+first_hero_name = raw_input("Please type your hero's name: ")
+
+while (first_hero_name.isspace() == True):
+    print "Heroes must take a name."
+    first_hero_name = raw_input("Please type your hero's name: ")
+
+print "----- Second Hero -----"
+second_hero_name = raw_input("Please type your hero's name: ")
+
+while (second_hero_name.isspace() == True):
+    print "Heroes must take a name."
+    second_hero_name = raw_input("Please type your hero's name: ")
+
+while (first_hero_name == second_hero_name):
+    print first_hero_name + " is taken, please choose another name!"
+    print "----- Second Hero -----"
+    second_hero_name = raw_input("Please type your hero's name: ")
+    while (second_hero_name.isspace() == True):
+        print "Heroes must take a name."
+        second_hero_name = raw_input("Please type your hero's name: ")
+
+random_result = random.randint(1,2)
+
+def random_function(random_result):
+    damage_risk = 100
+    damage_risk2 = 100
+    if (random_result == 1):
+        print "Coin toss result: " + first_hero_name + " starts first! " "\n" + first_hero_name + " " * 4 + " " * (
+                len("HP[100]" + "|" * 50) - len(first_hero_name)) + second_hero_name
+        print "HP[" + str(damage_risk) + "]" + "|" * 50 + " " * 4 + "HP[" + str(damage_risk2) + "]" + "|" * 50
+        damage(first_hero_name, damage_risk, damage_risk2)
+    if (random_result == 2):
+        print "Coin toss result: " + second_hero_name + " starts first! " "\n" + second_hero_name + " " * 4 + " " * (
+                len("HP[100]" + "|" * 50) - len(second_hero_name)) + first_hero_name
+        print "HP[" + str(damage_risk) + "]" + "|" * 50 + " " * 4 + "HP[" + str(damage_risk2) + "]" + "|" * 50
+        damage(second_hero_name, damage_risk, damage_risk2)
+
+
+def damage(heroes, damage_risk, damage_risk2):
+    print "-" * 8 + " " + heroes + " Attacks!!!" + "-" * 8
+    attack_magnitude = raw_input("Choose your attack magnitude between 1 and 50: ")
+    while (int(attack_magnitude) > 50) or (int(attack_magnitude) < 0 or attack_magnitude.isspace() == True):
+        print "The attack magnitude must be between 1 and 50"
+        attack_magnitude = raw_input("Choose your attack magnitude between 1 and 50: ")
+    battle(attack_magnitude, heroes, damage_risk, damage_risk2)
+
+
+def battle(attack_magnitude, hero_name, damage_risk, damage_risk2):
+    random_number = random.randint(1, 100)
+    if (random_number <= (100 - int(attack_magnitude))):
+        print hero_name + " hits " + attack_magnitude + " damage!!"
+        if (hero_name == first_hero_name):
+            damage_risk2 -= int(attack_magnitude)
+            if (damage_risk2 <= 0):
+                damage_risk2 = 0
+                print "#" * 15, first_hero_name + " wins!", "#" * 15
+            return passing_to_another_hero(damage_risk, damage_risk2, hero_name)
+        if (hero_name == second_hero_name):
+            damage_risk -= int(attack_magnitude)
+            if (damage_risk <= 0):
+                damage_risk = 0
+                print "#" * 15, second_hero_name + " wins!", "#" * 15
+            return passing_to_another_hero(damage_risk, damage_risk2, hero_name)
+    elif (random_number > (100 - int(attack_magnitude))):
+        print "Ooopsy! " + hero_name + " missed the attack!"
+        passing_to_another_hero(damage_risk, damage_risk2, hero_name)
+
+
+def passing_to_another_hero(damage_risk, damage_risk2, hero_name):
+    if (hero_name == first_hero_name):
+        print hero_name + " " * 4 + " " * (
+            len("HP[" + str(damage_risk) + "]" + "|" * (51)) - len(hero_name)) + second_hero_name
+        print "HP[" + str(damage_risk) + "]" + "|" * (damage_risk / 2) + " " * (
+            50 - (damage_risk / 2)) + " " * 5 + "HP[" + str(damage_risk2) + "]" + "|" * (damage_risk2 / 2)
+        if damage_risk2 > 0:
+            return damage(second_hero_name, damage_risk, damage_risk2)
+    if (hero_name == second_hero_name):
+        print hero_name + " " * 4 + " " * (
+            len("HP[" + str(damage_risk) + "]" + "|" * (51)) - len(hero_name)) + first_hero_name
+        print "HP[" + str(damage_risk2) + "]" + "|" * (damage_risk2 / 2) + " " * (
+                50 - (damage_risk2 / 2)) + " " * 5 + "HP[" + str(damage_risk) + "]" + "|" * (damage_risk / 2)
+        if damage_risk > 0:
+            return damage(first_hero_name, damage_risk, damage_risk2)
+    if damage_risk <= 0 or damage_risk2 <= 0:
+        play_again = raw_input("Do you want to play another round(yes or no)? ")
+        play_again.lower()
+        if (play_again.lower() == "yes"):
+            random_function(random_result)
+        elif (play_again.lower() == "no"):
+            print "Thanks for playing! See you again!"
+        while (play_again.lower() != "yes" or play_again.lower() != "no"):
+            print "Please write only yes or no"
+            play_again = raw_input("Do you want to play another round(YES or NO)? ")
+            play_again.lower()
+            if (play_again.lower() == "yes"):
+                random_function(random_result)
+                break
+            elif (play_again.lower() == "no"):
+                print "Thanks for playing! See you again!"
+                break
+
+random_function(random_result)
