@@ -149,7 +149,7 @@ class Myclass():
         self.rating = open(self.filename, "r") #for reading
         self.rating = {} #dict for ratings
 
-    def recommendationss(self):
+    def recommendations(self):
         recommendations.getRecommendations(self.rating)
 
 
