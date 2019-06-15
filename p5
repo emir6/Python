@@ -1,0 +1,136 @@
+from Tkinter import *
+import tkFileDialog
+
+class Myclass(Frame):   #Our class
+    def __init__(self,main_window):
+        Frame.__init__(self,main_window)
+        self.root = main_window #Our window
+        self.main_func()    #Main function
+
+    def main_func(self):
+        self.frame1=Frame(self.root)  #First frame for label
+        self.frame1.grid(row=0)
+        self.label1=Label(self.frame1,text="Restaurants Clustering Tool",bg="blue",fg="white",font="Calibri 15")
+        self.label1.grid(ipadx=190)
+        self.frame2=Frame(self.root) #Second Frame for file load button and label
+        self.frame2.grid(row=1)
+        self.button1=Button(self.frame2,text="Load Restaurants Data",relief=GROOVE,bg="lightgrey",command=self.openfile) #for select all files
+        self.button1.grid(row=0,column=0,ipady=5,pady=5)
+        self.label2=Label(self.frame2,text="Data not uploaded",bg="red",fg="black") #it shows that the files are not uploaded
+        self.label2.grid(row=0,column=1,padx=10)
+        self.frame3=Frame(self.root) #Third frame for cluster buttons
+        self.frame3.grid(row=2)
+        self.button2=Button(self.frame3,text="Cluster Restaurants based on Food",relief=GROOVE,bg="lightgrey",command=self.myfood)  # the button shows food cluster
+        self.button2.grid(row=0,column=0,ipady=5)
+        self.button3 = Button(self.frame3, text="Cluster Restaurants based on Rating", relief=GROOVE, bg="lightgrey",command=self.myrating) # the button shows rating cluster
+        self.button3.grid(row=0, column=1,ipady=5)
+        self.button4 = Button(self.frame3, text="Cluster Restaurants based on Retaurants", relief=GROOVE, bg="lightgrey",command=self.myrestaurant) # the button shows restaurant cluster
+        self.button4.grid(row=0, column=2,ipady=5)
+
+    def openfile(self): #the func for open the excel files
+        self.filename = tkFileDialog.askopenfilenames(initialdir="/", title="Select file")
+        for i in self.filename:  # adding name and data
+            self.workbook = xlrd.open_workbook(i)  # open excel file
+            self.sheet = self.workbook.sheet_by_index(0)  # reach containing datas
+            for k in range(1, self.sheet.nrows): #it shows each food names
+                for l in range(1,self.sheet.ncols): #it shows each foot ratings
+                    print self.sheet.cell_value(k,l) #printing food and ratings
+
+        self.label2.grid_forget()
+        self.label3 = Label(self.frame2, text="Data uploaded", bg="green", fg="black") #it shows that the files are uploaded
+        self.label3.grid(row=0, column=1, padx=10)
+    def myfood(self):   #the func for showing the food cluster
+
+        self.root.geometry("610x500") #
+        self.frame4 = Frame(self.root)
+        self.frame4.grid(row=3)
+        self.canvas1 = Canvas(self.frame4, width=500, height=200)
+        self.canvas1.create_rectangle(0, 0, 1000000, 1000000, fill="white")
+        self.canvas1.grid(row=0, column=0)
+
+        self.scrollbar1 = Scrollbar(self.frame4, orient="vertical")
+        self.scrollbar1.grid(row=0, column=1, ipady=75)
+
+        self.scrollbar2 = Scrollbar(self.frame4, orient="horizontal")
+        self.scrollbar2.grid(row=1, column=0, ipadx=225)
+
+        self.frame5=Frame(self.root)
+        self.frame5.grid(row=4)
+
+        self.label4=Label(self.frame5,text="Clusters:")
+        self.label4.grid(row=0,column=3)
+        self.label5=Label(self.frame5,text="Cutting Point")
+        self.label5.grid(row=1,column=0)
+        self.entry1=Entry(self.frame5,width=5)
+        self.entry1.grid(row=1,column=1)
+        self.button3=Button(self.frame5,text="Run Analysis",relief=GROOVE,bg="lightgrey")
+        self.button3.grid(row=1,column=2,ipadx=50,ipady=5)
+        self.listbox1=Listbox(self.frame5,height=8)
+        self.listbox1.grid(row=1,column=3,ipadx=40)
+
+    def myrating(self):     #the func for showing the rating cluster
+
+        self.root.geometry("610x500") #expanding the root
+        self.frame4 = Frame(self.root) #Forth frame for canvas and scrollbars
+        self.frame4.grid(row=3)
+        self.canvas1 = Canvas(self.frame4, width=500, height=200) #it shows all clusters
+        self.canvas1.create_rectangle(0, 0, 1000000, 1000000, fill="white")
+        self.canvas1.grid(row=0, column=0)
+
+        self.scrollbar1 = Scrollbar(self.frame4, orient="vertical")
+        self.scrollbar1.grid(row=0, column=1, ipady=75)
+
+        self.scrollbar2 = Scrollbar(self.frame4, orient="horizontal")
+        self.scrollbar2.grid(row=1, column=0, ipadx=225)
+
+        self.frame5 = Frame(self.root) #fifth frame for label, entry, button and listbox
+        self.frame5.grid(row=4)
+
+        self.label4 = Label(self.frame5, text="Clusters:")
+        self.label4.grid(row=0, column=3)
+        self.label5 = Label(self.frame5, text="Cutting Point")
+        self.label5.grid(row=1, column=0)
+        self.entry1 = Entry(self.frame5, width=5)
+        self.entry1.grid(row=1, column=1)
+        self.button3 = Button(self.frame5, text="Run Analysis", relief=GROOVE, bg="lightgrey")
+        self.button3.grid(row=1, column=2, ipadx=50, ipady=5)
+        self.listbox1 = Listbox(self.frame5, height=8)
+        self.listbox1.grid(row=1, column=3, ipadx=40)
+
+    def myrestaurant(self): ##the func for showing the restaurant cluster
+
+        self.root.geometry("610x500")#expanding the root
+        self.frame4 = Frame(self.root)#Forth frame for canvas and scrollbars
+        self.frame4.grid(row=3)
+        self.canvas1 = Canvas(self.frame4, width=500, height=200) #it shows all clusters
+        self.canvas1.create_rectangle(0, 0, 1000000, 1000000, fill="white")
+        self.canvas1.grid(row=0, column=0)
+
+        self.scrollbar1 = Scrollbar(self.frame4, orient="vertical")
+        self.scrollbar1.grid(row=0, column=1, ipady=75)
+
+        self.scrollbar2 = Scrollbar(self.frame4, orient="horizontal")
+        self.scrollbar2.grid(row=1, column=0, ipadx=225)
+
+        self.frame5 = Frame(self.root) #fifth frame for label, entry, button and listbox
+        self.frame5.grid(row=4)
+
+        self.label4 = Label(self.frame5, text="Clusters:")
+        self.label4.grid(row=0, column=3)
+        self.label5 = Label(self.frame5, text="Cutting Point")
+        self.label5.grid(row=1, column=0)
+        self.entry1 = Entry(self.frame5, width=5)
+        self.entry1.grid(row=1, column=1)
+        self.button3 = Button(self.frame5, text="Run Analysis", relief=GROOVE, bg="lightgrey")
+        self.button3.grid(row=1, column=2, ipadx=50, ipady=5)
+        self.listbox1 = Listbox(self.frame5, height=8)
+        self.listbox1.grid(row=1, column=3, ipadx=40)
+
+def main():
+    root = Tk()
+    root.geometry("610x200")
+    root.title("Clustering")
+    app = Myclass(root)
+    root.mainloop()
+
+main()
