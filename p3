@@ -1,0 +1,122 @@
+from Tkinter import *
+import csv
+class myclass:
+    def __init__(self, window):
+        frame1 = Frame(window)
+        frame1.pack(fill=BOTH, expand=True)
+        frame2 = Frame(window)
+        frame2.pack(expand=True, fill=BOTH)
+        self.list = []  # contains calories
+        self.label1 = Label(frame1, text="Sehir Cafeteria", bg="darkblue", fg="red")
+        self.label1.pack(expand=True, fill=BOTH)
+        self.label2 = Label(frame2, text="File Path:")
+        self.label2.grid(sticky=NW, row=0, column=0)
+        self.entry1 = Entry(frame2)
+        self.entry1.grid(row=0, column=1)
+        self.label3 = Label(frame2, text="Choose your diet:")
+        self.label3.grid(sticky=W, row=1, column=0)
+        self.var = IntVar()
+        self.check1 = Radiobutton(frame2, text="1300 kcal", variable=self.var, value=1300, command=self.myfunc1)
+        self.check1.grid(row=1, column=1)
+        self.check2 = Radiobutton(frame2, text="1800 kcal", variable=self.var, value=1800, command=self.myfunc2)
+        self.check2.grid(row=1, column=2)
+        self.check3 = Radiobutton(frame2, text="2300 kcal", variable=self.var, value=2300, command=self.myfunc3)
+        self.check3.grid(row=1, column=3)
+        self.button = Button(frame2, text="Continue", bg="red", fg="black", command=self.myfunc4)
+        self.button.grid(row=3, column=0, sticky=W)
+        self.label4 = Label(frame2)
+        self.label4.grid(row=2, column=0)
+        self.entry1.insert(0, "FoodDB.csv")
+    def myfunc1(self):
+        self.label4.config(text="Your Diet Choose is 1300 kcal")
+    def myfunc2(self):
+        self.label4.config(text="Your Diet Choose is 1800 kcal")
+    def myfunc3(self):
+        self.label4.config(text="Your Diet Choose is 2300 kcal")
+    def myfunc4(self):
+        root.geometry("800x400+0+0")
+        frame3 = Frame(root)
+        frame3.pack(expand=True, fill=BOTH)
+        label3 = Label(frame3, text="Choose Your Food", padx=110)
+        label3.grid(row=0, column=3)
+        label5 = Label(frame3, text="Food Menu", padx=40)
+        label5.grid(row=1, column=0, sticky=NW)
+        label6 = Label(frame3, text="My Food", padx=40)
+        label6.grid(row=1, column=4, sticky=E)
+        self.listbox1 = Listbox(frame3,width=30)
+        self.listbox1.grid(row=2, column=0)
+        FoodMenu().importFile(self.listbox1)
+        self.listbox2 = Listbox(frame3,width=30)
+        self.listbox2.grid(row=2, column=4)
+        self.button2 = Button(frame3, text="Add Food", bg="red", fg="black", command=self.add_food)
+        self.button2.grid(row=2, column=3, sticky=S)
+        self.button3 = Button(frame3, text="Remove Food", bg="red", fg="black", command=self.remove_food)
+        self.button3.grid(row=3, column=3)
+        self.button4 = Button(frame3, text="Continue", bg="red", fg="black", command=self.newFrame)
+        self.button4.grid(row=4, column=0, sticky=W)
+    def add_food(self):
+        currentSelection = self.listbox1.curselection()
+        for i in currentSelection:
+            kcal = self.listbox1.get(i).split("TL ")[-1].strip(" kcal")  # strip(" kcal")
+            self.list.append(kcal)
+            self.listbox2.insert(END, self.listbox1.get(i))
+        print self.list
+    def remove_food(self):
+        currentSelection = self.listbox2.curselection()
+        self.list.remove((self.listbox2.get(currentSelection[0]).split())[-2])
+        self.listbox2.delete(currentSelection[0])
+        print self.list
+    def newFrame(self):
+        root.geometry("800x600+0+0")
+        frame4 = Frame(root)
+        frame4.pack(expand=True, fill=BOTH)
+        label17 = Label(frame4, text="Summary and Saving",padx=100)
+        label17.grid(row=0, column=2,columnspan=6)
+        label18=Label(frame4, text="Your Diet Choose is %s " %self.var.get()+"kcal")
+        label18.grid(row=2, sticky=W)
+        self.cal = 0
+        for i in self.list:
+           self.cal += int(i)
+        print self.cal
+        self.label19=Label(frame4)
+        self.label19.grid(row=3, column=0,sticky=W,columnspan=4)
+        if self.cal <= self.var.get():
+            self.label19.config(text=("Your Chosen Food Menu-Amount of Calories:" + str(self.cal) + "kcal"), bg="green")
+        else:
+            self.label19.config(text=("Your Chosen Food Menu-Amount of Calories:" + str(self.cal) + "kcal above daily limit"), bg="red")
+        self.var2=IntVar()
+        label20 = Label(frame4, text="Choose File Type")
+        label20.grid(row=4, column=0, sticky=W)
+        self.savetxt = Radiobutton(frame4, text="Txt File", variable=self.var2, value=1)
+        self.savetxt.grid(row=4, column=1)
+        self.savecsv = Radiobutton(frame4, text="CSV File", variable=self.var2, value=2)
+        self.savecsv.grid(row=4, column=2)
+        self.bigsave = Button(frame4, text="Save File", bg="red", command=self.save)
+        self.bigsave.grid(row=4, column=3)
+    def save(self):
+        if self.var2.get() == 1:
+            file=open("Food.txt", "w")
+            for i in self.listbox2.get(0,END):
+                file.write(i.encode("utf-8")+"\n")
+            file.close()
+        else:
+            with open("Food.csv", "w") as csv_file:
+                wr = csv.writer(csv_file,quoting=csv.QUOTE_ALL)
+                for k in self.listbox2.get(0,END):
+                    wr.writerow(k.encode("utf-8")+"\n")
+class FoodMenu():
+    list = []
+    def importFile(self, listbox):
+        with open('FoodDB.csv') as file:
+            spamreader = file.readlines()
+            for line in spamreader:
+                row = line.split(",")
+                if "Name" not in row:
+                    listbox.insert(END, (row[1] + " " + row[2][:-1] + "TL " + row[0] + " kcal"))
+                else:
+                    listbox.insert(END, (row[1] + " " + row[2][:-1] + " " + row[0]))
+root = Tk()
+var = StringVar()
+app = myclass(root)
+root.geometry("800x200+0+0")
+root.mainloop()
